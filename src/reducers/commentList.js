@@ -1,38 +1,32 @@
-import { BLOG_POST_REQUEST, BLOG_POST_ERROR, BLOG_POST_RECEIVED, BLOG_POST_UNLOAD } from "../actions/constants";
+import { COMMENT_LIST_REQUEST, COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD } from "../actions/constants";
 
 export default (state = {
-    post: null,
+    commentList: null,
     isFetching: false
 }, action) => {
     switch (action.type) {
-        case BLOG_POST_REQUEST:
+        case COMMENT_LIST_REQUEST:
             state = {
                 ...state,
                 isFetching: true
             };
             console.log(state);
             return state;
-        case BLOG_POST_ERROR:
+
+        case COMMENT_LIST_RECEIVED:
             state = {
                 ...state,
-                post: null,
+                commentList: action.data['hydra:member'],
                 isFetching: false
             };
             console.log(state);
             return state;
-        case BLOG_POST_RECEIVED:
-            state = {
-                ...state,
-                post: action.data,
-                isFetching: false
-            };
-            console.log(state);
-            return state;
-        case BLOG_POST_UNLOAD:
+        case COMMENT_LIST_ERROR:
+        case COMMENT_LIST_UNLOAD:
             state = {
                 ...state,
                 isFetching: false,
-                post: null
+                commentList: null
             }
             console.log(state);
             return state;
