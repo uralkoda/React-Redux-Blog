@@ -16,14 +16,11 @@ class LoginForm extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.token !== this.props.token) {
-            console.log(this.props);
-            console.log(prevProps);
             this.props.history.push('/');
         }
     }
 
     onSubmit(values) {
-        console.log(values);
         return this.props.userLoginAttempt(
             values.username,
             values.password
@@ -32,10 +29,11 @@ class LoginForm extends React.Component {
 
 
     render() {
-        console.log(this.props);
-        const { handleSubmit } = this.props;
+        const { handleSubmit, error } = this.props;
         return (
             <div className="text-center">
+                {error && <div className="alert alert-danger">{error}</div>}
+
                 <form className="mt-4" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Field name="username" label="Username" type="text" component={renderField} />
                     <Field name="password" label="Password" type="password" component={renderField} />

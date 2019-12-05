@@ -1,4 +1,4 @@
-import { COMMENT_LIST_REQUEST, COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD } from "../actions/constants";
+import { COMMENT_LIST_REQUEST, COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD, COMMENT_ADDED } from "../actions/constants";
 
 export default (state = {
     commentList: null,
@@ -10,7 +10,7 @@ export default (state = {
                 ...state,
                 isFetching: true
             };
-            console.log(state);
+
             return state;
 
         case COMMENT_LIST_RECEIVED:
@@ -19,8 +19,13 @@ export default (state = {
                 commentList: action.data['hydra:member'],
                 isFetching: false
             };
-            console.log(state);
+
             return state;
+        case COMMENT_ADDED:
+            return {
+                ...state,
+                commentList: [action.comment, ...state.commentList]
+            }
         case COMMENT_LIST_ERROR:
         case COMMENT_LIST_UNLOAD:
             state = {
@@ -28,7 +33,7 @@ export default (state = {
                 isFetching: false,
                 commentList: null
             }
-            console.log(state);
+
             return state;
         default:
             return state;

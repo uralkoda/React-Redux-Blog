@@ -10,7 +10,7 @@ export default (state = {
                 ...state,
                 isFetching: true
             };
-            console.log(state);
+
             return state;
         case BLOG_POST_ERROR:
             state = {
@@ -18,7 +18,7 @@ export default (state = {
                 post: null,
                 isFetching: false
             };
-            console.log(state);
+
             return state;
         case BLOG_POST_RECEIVED:
             state = {
@@ -26,7 +26,7 @@ export default (state = {
                 post: action.data,
                 isFetching: false
             };
-            console.log(state);
+
             return state;
         case BLOG_POST_UNLOAD:
             state = {
@@ -34,7 +34,7 @@ export default (state = {
                 isFetching: false,
                 post: null
             }
-            console.log(state);
+
             return state;
         default:
             return state;
