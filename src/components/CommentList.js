@@ -8,7 +8,7 @@ import "./CommentList.css";
 class CommentList extends React.Component {
     render() {
         const { commentList } = this.props;
-        if (null === commentList) {
+        if (null === commentList || 0 === commentList.length) {
             return (<Message message="no comments yet" />);
         }
 
@@ -35,7 +35,8 @@ class CommentList extends React.Component {
                     })}
                 </div>
 
-            </div>)
+            </div>
+        )
     }
 }
 

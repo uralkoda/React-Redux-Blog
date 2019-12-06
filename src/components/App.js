@@ -7,14 +7,16 @@ import Header from './Header';
 import BlogPostContainer from './BlogPostContainer';
 import { requests } from '../agent';
 import { connect } from 'react-redux';
-import { userProfilFetch, userSetId } from '../actions/actions';
+import { userProfilFetch, userSetId, userLogout } from '../actions/actions';
+import RegisterForm from './RegisterForm';
 
 const mapStateToProps = state => ({
     ...state.auth
 });
 const mapDispatchToProps = {
     userProfilFetch,
-    userSetId
+    userSetId,
+    userLogout
 };
 class App extends React.Component {
     constructor(props) {
@@ -42,17 +44,17 @@ class App extends React.Component {
         }
     }
     render() {
-        const { isAuthenticated, userData } = this.props;
+        const { isAuthenticated, userData, userLogout } = this.props;
         console.log(this.props);
         console.log("from app" + isAuthenticated);
         return (
             <div>
-                <Header isAuthenticated={isAuthenticated} userData={userData} />
+                <Header isAuthenticated={isAuthenticated} userData={userData} logout={userLogout} />
                 <Switch>
                     <Route path="/login" component={LoginForm} />
                     <Route path="/blog-post/:id" component={BlogPostContainer} />
-                    <Route path="/" component={BlogPostListContainer} />
-
+                    <Route path="/register" component={RegisterForm} />
+                    <Route path="/:page?" component={BlogPostListContainer} />
                 </Switch>
             </div>
         )

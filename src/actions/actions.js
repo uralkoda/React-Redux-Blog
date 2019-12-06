@@ -1,5 +1,5 @@
 import { requests } from "../agent";
-import { BLOG_POST_LIST_REQUEST, BLOG_POST_LIST_ERROR, BLOG_POST_LIST_RECEIVED, BLOG_POST_LIST_ADD, BLOG_POST_REQUEST, BLOG_POST_ERROR, BLOG_POST_RECEIVED, BLOG_POST_UNLOAD, COMMENT_LIST_REQUEST, COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD, USER_LOGIN_SUCCESS, USER_PROFIL_REQUEST, USER_PROFIL_ERROR, USER_PROFIL_RECEIVED, USER_SET_ID, COMMENT_ADDED } from "./constants";
+import { BLOG_POST_LIST_REQUEST, BLOG_POST_LIST_ERROR, BLOG_POST_LIST_RECEIVED, BLOG_POST_LIST_ADD, BLOG_POST_REQUEST, BLOG_POST_ERROR, BLOG_POST_RECEIVED, BLOG_POST_UNLOAD, COMMENT_LIST_REQUEST, COMMENT_LIST_ERROR, COMMENT_LIST_RECEIVED, COMMENT_LIST_UNLOAD, USER_LOGIN_SUCCESS, USER_PROFIL_REQUEST, USER_PROFIL_ERROR, USER_PROFIL_RECEIVED, USER_SET_ID, COMMENT_ADDED, USER_LOGOUT, BLOG_POST_LIST_SET_PAGE } from "./constants";
 import { SubmissionError } from "redux-form";
 import { parseApiErrors } from "../apiUtils";
 
@@ -16,11 +16,16 @@ export const blogPostListReceived = (data) => ({
     type: BLOG_POST_LIST_RECEIVED,
     data
 });
+export const blogPostListSetPage = (page) => ({
+    type: BLOG_POST_LIST_SET_PAGE,
+    page
+});
 
-export const blogPostListFetch = () => {
+export const blogPostListFetch = (page = 1) => {
     return (dispatch) => {
         dispatch(blogPostListRequest());
-        return requests.get('/blog_posts')
+
+        return requests.get(`/blog_posts?_page1=&_page=${page}`)
             .then(response => dispatch(blogPostListReceived(response)))
             .catch(error => dispatch(blogPostListError(error)));
     }
@@ -68,10 +73,10 @@ export const commentListUnload = () => ({
 });
 
 
-export const commentListFetch = (id) => {
+export const commentListFetch = (id, page = 1) => {
     return (dispatch) => {
         dispatch(commentListRequest());
-        return requests.get(`/blog_posts/${id}/comments`)
+        return requests.get(`/blog_posts/${id}/comments?_page=${page}`)
             .then(response => dispatch(commentListReceived(response)))
             .catch(error => dispatch(commentListError(error)));
     }
@@ -93,6 +98,9 @@ export const commentAdd = (comment, blogPostId) => {
         ).then(
             response => dispatch(commentAdded(response))
         ).catch(error => {
+            if (401 === error.response.status) {
+                return dispatch(userLogout());
+            }
             throw new SubmissionError(parseApiErrors(error))
         })
     }
@@ -118,6 +126,22 @@ export const userLoginAttempt = (username, password) => {
     }
 };
 
+export const userLogout = () => {
+    return {
+        type: USER_LOGOUT
+    }
+}
+
+
+export const userRegister = (username, password, retypedPassword, email, name) => {
+    return (dispatch) => {
+        return requests.post('/users', { username, password, retypedPassword, email, name }, false).catch(error => {
+            throw new SubmissionError(parseApiErrors(error));
+        })
+    }
+};
+
+
 export const userSetId = (userId) => {
     return {
         type: USER_SET_ID,
@@ -129,8 +153,9 @@ export const userSetId = (userId) => {
 export const userProfilRequest = () => ({
     type: USER_PROFIL_REQUEST,
 });
-export const userProfilError = () => ({
-    type: USER_PROFIL_ERROR
+export const userProfilError = (userId) => ({
+    type: USER_PROFIL_ERROR,
+    userId
 });
 export const userProfilReceived = (userId, userData) => ({
     type: USER_PROFIL_RECEIVED,
@@ -145,7 +170,7 @@ export const userProfilFetch = (userId) => {
         dispatch(userProfilRequest());
         return requests.get(`/users/${userId}`, true).then(
             response => dispatch(userProfilReceived(userId, response))
-        ).catch(error => dispatch(userProfilError()))
+        ).catch(error => dispatch(userProfilError(userId)))
     }
 };
 
